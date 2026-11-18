@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <BinDir>c:\bin</BinDir>
+    <DebugType>Embedded</DebugType>
+    <ImplicitUsings>Enable</ImplicitUsings>
+    <LangVersion>Latest</LangVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+  </PropertyGroup>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <PropertyGroup>
+      <PublishedExe>$(PublishDir)$(ProjectName).exe</PublishedExe>
+    </PropertyGroup>
+    <Exec Command="echo copying $(PublishedExe) to $(BinDir) &amp;&amp; copy $(PublishedExe) $(BinDir)" />
+  </Target>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <PropertyGroup>
+      <PublishedExe>$(PublishDir)$(ProjectName).exe</PublishedExe>
+    </PropertyGroup>
+    <Exec Command="echo copying $(PublishedExe) to $(BinDir) &amp;&amp; copy $(PublishedExe) $(BinDir)" />
+  </Target>
+</Project>

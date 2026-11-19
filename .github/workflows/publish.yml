@@ -1,0 +1,47 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # BinDir is cleared so the local "copy to c:\bin" step is skipped on the runner.
+      - name: Publish single-file exe
+        run: dotnet publish bashshot.csproj -c Release -r win-x64 -o publish -p:BinDir=
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bashshot-win-x64
+          path: publish/bashshot.exe
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bashshot-win-x64
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" bashshot.exe --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
